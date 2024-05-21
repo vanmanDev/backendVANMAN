@@ -9,6 +9,9 @@ class Timesheets(models.Model):
     type = [
     ('normal','Normal'),
     ('backdate','Backdate'),
+    ('holiday','Holiday'),
+    ('backdate(holiday)','Backdate(Holiday)'),
+
     ]
 
     status = [
