@@ -17,6 +17,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=150, blank=True)
     is_staff = models.BooleanField(_('staff'), default=False)
     is_logged_in = models.BooleanField(_('logged in'), default=False)
+    is_activated = models.BooleanField(_('activated'), default=True)
 
     objects = CustomUserManager()
 
