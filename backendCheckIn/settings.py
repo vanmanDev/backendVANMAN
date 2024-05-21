@@ -65,7 +65,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backendCheckIn.urls'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:5173","https://frontend-vanman.vercel.app/"
+"http://localhost:5173","https://frontend-vanman-git.vercel.app"
 ]
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -128,9 +128,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': 'QuGgNInNIglOCcQidQOGvdWsqDRKUibA',
-        'HOST': 'monorail.proxy.rlwy.net',
-        'PORT': '13655',
+        'PASSWORD': 'qkosEPxtSBBHNeUCdjMCKYDpFcZewvwa',
+        'HOST': 'viaduct.proxy.rlwy.net',
+        'PORT': '58954',
     }
 }
 

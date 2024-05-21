@@ -41,6 +41,9 @@ def login(req):
     
     if not user.check_password(req.data['password']):
         return Response({'error': 'Wrong password'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    if not user.is_activated:
+        return Response({'error': 'User account is not activate'}, status=status.HTTP_403_FORBIDDEN)
 
     if user.is_logged_in:
         return Response({'error': 'User is already logged in'}, status=status.HTTP_409_CONFLICT)
@@ -59,7 +62,7 @@ def login(req):
     
     token = Token.objects.get_or_create(user=user)
     serializer = UserSerializer(instance=user)
-    return Response({'token': token[0].key, 'user': serializer.data})
+    return Response({'token': token[0].key, 'user': serializer.data}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def register(req):
@@ -86,10 +89,6 @@ def token(req):
 def logout(req):
     req.user.is_logged_in = False
     req.user.save()
-    
-    # Check if the session has expired
-    if req.session.get_expiry_age() <= 0:
-        # Session expired, delete the token
-        req.user.auth_token.delete()
+    req.user.auth_token.delete()
         
     return Response({'message': 'Logged out successfully'})
