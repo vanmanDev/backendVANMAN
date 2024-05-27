@@ -10,5 +10,6 @@ urlpatterns = [
     path('leave_requests/<int:pk>/', views.LeaveRequestDetail.as_view()),
     path('feedbacks/', views.FeedbackList.as_view()),
     path('feedbacks/<int:pk>/', views.FeedbackDetail.as_view()),
+    path('attendance-summary/<int:user_id>/', views.AttendanceSummary.as_view(), name='attendance-summary'),
 ]
 
