@@ -96,7 +96,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # Message (HTML content)
         "",
         # Sender
-        "VANMAN Company",
+        "VANMAN Sytem",
         # Recipient
         [reset_password_token.user.email],
         # HTML message
