@@ -74,6 +74,7 @@ def register(req):
     if CustomUser.objects.filter(email=req.data['email']).exists():
         return Response({'error': 'Email already exists'}, status=status.HTTP_409_CONFLICT)
     
+    serializer = UserSerializer(data=req.data)
     if serializer.is_valid():
         serializer.save()
         user = CustomUser.objects.get(username=req.data['username'])
