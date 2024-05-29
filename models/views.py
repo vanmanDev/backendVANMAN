@@ -68,16 +68,25 @@ class LeaveRequestList(generics.ListCreateAPIView):
                 leave_request = serializer.save()
                 supervisor = leave_request.user.supervisor
                 if supervisor and supervisor.email:
+                    email_body = f"""
+                        <html>
+                            <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+                                <h2 style="color: #2C3E50;">Leave Request Details</h2>
+                                <p><strong>User:</strong> {leave_request.user.username}</p>
+                                <p><strong>Requested Leave Period:</strong> {leave_request.datetime_start} to {leave_request.datetime_end}</p>
+                                <p><strong>Reason:</strong> {leave_request.description}</p>
+                                <p><strong>Type of Leave:</strong> {leave_request.get_type_of_leave_display()}</p>
+                                <p><strong>Contact:</strong> {leave_request.tel}</p>
+                            </body>
+                        </html>
+                        """
                     send_mail(
-                        subject=f"Leave Request from {leave_request.user.username}",
-                        message=(
-                            f"User {leave_request.user.username} has requested leave from {leave_request.datetime_start} "
-                            f"to {leave_request.datetime_end}.\nReason: {leave_request.description}\n"
-                            f"Type of Leave: {leave_request.get_type_of_leave_display()}\n"
-                            f"Contact: {leave_request.tel}"
-                        ),
-                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        subject=f"Leave Request from {leave_request.user.first_anme} {leave_request.user.last_name}",
+                        message="",
+                        sender="VANMAN System",
+                        html_message=email_body,
                         recipient_list=[supervisor.email],
+                        fail_silently=False,
                     )
             except Exception as e:
                 logger.error(f"Error during leave request creation: {str(e)}")
