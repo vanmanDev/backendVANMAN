@@ -8,6 +8,12 @@ from .models import Timesheets, ConfigSalary, leave_requests, Feedbacks
 from .serializers import TimesheetsSerializer, ConfigSalarySerializer, leave_requestsSerializer, FeedbacksSerializer
 from django.utils import timezone
 from users.models import CustomUser
+from django.core.mail import send_mail
+from django.conf import settings
+from django.db import transaction
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TimesheetList(generics.ListCreateAPIView):
     serializer_class = TimesheetsSerializer
@@ -55,19 +61,27 @@ class LeaveRequestList(generics.ListCreateAPIView):
         if location is not None:
             queryset = queryset.filter(testLocation=location)
         return queryset
-
+    
     def perform_create(self, serializer):
-        leave_request = serializer.save()
-        supervisor_email = leave_request.supervisor.email
-        send_mail(
-            subject=f"Leave Request from {leave_request.user.username}",
-            message=(
-                f"User {leave_request.user.username} has requested leave from {leave_request.datetime_start} "
-                f"to {leave_request.datetime_end}.\nReason: {leave_request.description}"
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[supervisor_email],
-        )
+        with transaction.atomic():
+            try:
+                leave_request = serializer.save()
+                supervisor = leave_request.user.supervisor
+                if supervisor and supervisor.email:
+                    send_mail(
+                        subject=f"Leave Request from {leave_request.user.username}",
+                        message=(
+                            f"User {leave_request.user.username} has requested leave from {leave_request.datetime_start} "
+                            f"to {leave_request.datetime_end}.\nReason: {leave_request.description}\n"
+                            f"Type of Leave: {leave_request.get_type_of_leave_display()}\n"
+                            f"Contact: {leave_request.tel}"
+                        ),
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[supervisor.email],
+                    )
+            except Exception as e:
+                logger.error(f"Error during leave request creation: {str(e)}")
+                raise e
     
     def delete(self, request, *args, **kwargs):
         try:
