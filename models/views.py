@@ -159,7 +159,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
             </html>
             """
             send_mail(
-                subject,
+                f"{subject} from {first_name} {last_name}",
                 "",
                 "VANMAN System <your-email@example.com>",
                 [supervisor_email],
