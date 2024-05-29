@@ -18,6 +18,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('staff'), default=False)
     is_logged_in = models.BooleanField(_('logged in'), default=False)
     is_activated = models.BooleanField(_('activated'), default=True)
+    supervisor = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     objects = CustomUserManager()
 
