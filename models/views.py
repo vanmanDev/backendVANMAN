@@ -55,6 +55,19 @@ class LeaveRequestList(generics.ListCreateAPIView):
         if location is not None:
             queryset = queryset.filter(testLocation=location)
         return queryset
+
+    def perform_create(self, serializer):
+        leave_request = serializer.save()
+        supervisor_email = leave_request.supervisor.email
+        send_mail(
+            subject=f"Leave Request from {leave_request.user.username}",
+            message=(
+                f"User {leave_request.user.username} has requested leave from {leave_request.datetime_start} "
+                f"to {leave_request.datetime_end}.\nReason: {leave_request.description}"
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[supervisor_email],
+        )
     
     def delete(self, request, *args, **kwargs):
         try:
