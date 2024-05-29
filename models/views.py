@@ -91,10 +91,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
     def perform_update(self, serializer):
         with transaction.atomic():
             try:
-                leave_request = serializer.save()
-                supervisor = leave_request.user.supervisor
-                if supervisor and supervisor.email:
-                    self.send_leave_request_email(leave_request, supervisor.email, "Updated Leave Request")
+                serializer.save()
             except Exception as e:
                 logger.error(f"Error during leave request update: {str(e)}")
                 raise e
