@@ -130,7 +130,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
                             <p><strong>Type of Leave:</strong> {leave_request.get_type_of_leave_display()}</p>
                             <p><strong>Reason:</strong> {leave_request.description}</p>
                             <p><strong>Contact:</strong> {leave_request.tel}</p>
-                            <p><strong>*Maybe, Intern'll update the requested. please, Check in Website : {website} </strong></p>
+                            <p><strong>*Maybe, Intern'll update/delete the requested. please, Check in Website : {website} </strong></p>
                         </div>
                     </div>
                 </body>
