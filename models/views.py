@@ -74,7 +74,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
                 logger.error(f"Error during leave request creation: {str(e)}")
                 raise e
 
-    def update(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -88,7 +88,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
         
         return Response(serializer.data)
 
-    def perform_update(self, serializer):
+    def perform_patch(self, serializer):
         with transaction.atomic():
             try:
                 serializer.save()
