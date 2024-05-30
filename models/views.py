@@ -13,6 +13,7 @@ from django.conf import settings
 from django.db import transaction
 import logging
 from datetime import timedelta
+from rest_framework.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
                 logger.error(f"Error during leave request creation: {str(e)}")
                 raise e
 
-     def patch(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', True)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
