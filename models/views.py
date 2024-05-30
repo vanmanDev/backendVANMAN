@@ -55,127 +55,106 @@ class ConfigSalaryDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ConfigSalary.objects.all()
 
 class LeaveRequestList(generics.ListCreateAPIView):
-    serializer_class = leave_requestsSerializer
+        serializer_class = leave_requestsSerializer
 
-    def get_queryset(self):
-        queryset = leave_requests.objects.all()
-        location = self.request.query_params.get('location')
-        if location is not None:
-            queryset = queryset.filter(testLocation=location)
-        return queryset
-    
-    def perform_create(self, serializer):
-        with transaction.atomic():
+        def get_queryset(self):
+                queryset = leave_requests.objects.all()
+                location = self.request.query_params.get('location')
+                if location is not None:
+                    queryset = queryset.filter(testLocation=location)
+                return queryset
+
+        def perform_create(self, serializer):
+            with transaction.atomic():
+                try:
+                    leave_request = serializer.save()
+                    supervisor = leave_request.user.supervisor
+                    if supervisor and supervisor.email:
+                        self.send_leave_request_email(leave_request, supervisor.email, "Leave Request")
+                except Exception as e:
+                    logger.error(f"Error during leave request creation: {str(e)}")
+                    raise e
+
+        def send_leave_request_email(self, leave_request, supervisor_email, subject):
             try:
-                leave_request = serializer.save()
-                supervisor = leave_request.user.supervisor
-                if supervisor and supervisor.email:
-                    self.send_leave_request_email(leave_request, supervisor.email, "Leave Request")
-            except Exception as e:
-                logger.error(f"Error during leave request creation: {str(e)}")
-                raise e
+                datetime_start_formatted = leave_request.datetime_start.strftime("Date: %d %B %Y Time: %I:%M:%S %p")
+                datetime_end_formatted = leave_request.datetime_end.strftime("Date: %d %B %Y Time: %I:%M:%S %p")
+                duration = (leave_request.datetime_end - leave_request.datetime_start)
+                days = duration.days
+                hours, remainder = divmod(duration.seconds, 3600)
+                minutes, _ = divmod(remainder, 60)
+                first_name = leave_request.user.first_name
+                last_name = leave_request.user.last_name
+                website = 'https://vanman.vercel.app/leave-req/'
 
-    def patch(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', True)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_patch(serializer)
-
-        leave_request = serializer.instance
-        supervisor = leave_request.user.supervisor
-        if supervisor and supervisor.email:
-            self.send_leave_request_email(leave_request, supervisor.email, "Updated Leave Request")
-
-        return Response(serializer.data)
-
-    def perform_patch(self, serializer):
-        with transaction.atomic():
-            try:
-                serializer.save()
-            except Exception as e:
-                logger.error(f"Error during leave request update: {str(e)}")
-                raise ValidationError({"detail": "An error occurred while updating the leave request."})
-
-    def send_leave_request_email(self, leave_request, supervisor_email, subject):
-        try:
-            datetime_start_formatted = leave_request.datetime_start.strftime("Date: %d %B %Y Time: %I:%M:%S %p")
-            datetime_end_formatted = leave_request.datetime_end.strftime("Date: %d %B %Y Time: %I:%M:%S %p")
-            duration = (leave_request.datetime_end - leave_request.datetime_start)
-            days = duration.days
-            hours, remainder = divmod(duration.seconds, 3600)
-            minutes, _ = divmod(remainder, 60)
-            first_name = leave_request.user.first_name
-            last_name = leave_request.user.last_name
-
-            email_html_message = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>{subject}</title>
-                <style>
-                    body {{
-                        font-family: Arial, sans-serif;
-                        background-color: #f4f4f4;
-                        margin: 0;
-                        padding: 0;
-                    }}
-                    .container {{
-                        max-width: 800px;
-                        margin: 0 auto;
-                        padding: 20px;
-                        background-color: #fff;
-                        border-radius: 10px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    }}
-                    h1 {{
-                        color: #333;
-                    }}
-                    p {{
-                        color: #555;
-                    }}
-                    .details {{
-                        margin-top: 20px;
-                        padding-top: 10px;
-                        border-top: 1px solid #ccc;
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>{subject}</h1>
-                    <p>Intern <strong>{first_name} {last_name}</strong> has requested leave:</p>
-                    <div class="details">
-                        <p><strong>Requested Period:</strong> <strong>[ {datetime_start_formatted} ]</strong> to <strong>[ {datetime_end_formatted} ]</strong></p>
-                        <p><strong>Duration:</strong> {days} days, {hours} hours, {minutes} minutes</p>
-                        <p><strong>Type of Leave:</strong> {leave_request.get_type_of_leave_display()}</p>
-                        <p><strong>Reason:</strong> {leave_request.description}</p>
-                        <p><strong>Contact:</strong> {leave_request.tel}</p>
+                email_html_message = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>{subject}</title>
+                    <style>
+                        body {{
+                            font-family: Arial, sans-serif;
+                            background-color: #f4f4f4;
+                            margin: 0;
+                            padding: 0;
+                        }}
+                        .container {{
+                            max-width: 800px;
+                            margin: 0 auto;
+                            padding: 20px;
+                            background-color: #fff;
+                            border-radius: 10px;
+                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        }}
+                        h1 {{
+                            color: #333;
+                        }}
+                        p {{
+                            color: #555;
+                        }}
+                        .details {{
+                            margin-top: 20px;
+                            padding-top: 10px;
+                            border-top: 1px solid #ccc;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>{subject}</h1>
+                        <p>Intern <strong>{first_name} {last_name}</strong> has requested leave:</p>
+                        <div class="details">
+                            <p><strong>Requested Period:</strong> <strong>[ {datetime_start_formatted} ]</strong> to <strong>[ {datetime_end_formatted} ]</strong></p>
+                            <p><strong>Duration:</strong> {days} days, {hours} hours, {minutes} minutes</p>
+                            <p><strong>Type of Leave:</strong> {leave_request.get_type_of_leave_display()}</p>
+                            <p><strong>Reason:</strong> {leave_request.description}</p>
+                            <p><strong>Contact:</strong> {leave_request.tel}</p>
+                            <p><strong>*Maybe, Intern'll update the requested. please, Check in Website : {website} </strong></p>
+                        </div>
                     </div>
-                </div>
-            </body>
-            </html>
-            """
-            send_mail(
-                f"{subject} from {first_name} {last_name}",
-                "",
-                "VANMAN System <your-email@example.com>",
-                [supervisor_email],
-                html_message=email_html_message,
-                fail_silently=False,
-            )
-        except Exception as e:
-            logger.error(f"Error sending leave request email: {str(e)}")
-            raise e
-
+                </body>
+                </html>
+                """
+                send_mail(
+                    f"{subject} from {first_name} {last_name}",
+                    "",
+                    "VANMAN System <your-email@example.com>",
+                    [supervisor_email],
+                    html_message=email_html_message,
+                    fail_silently=False,
+                )
+            except Exception as e:
+                logger.error(f"Error sending leave request email: {str(e)}")
+                raise e
     
-    def delete(self, request, *args, **kwargs):
-        try:
-            # Delete all instances of leave_requests
-            leave_requests.objects.all().delete()
-            return Response({'message': 'All leave_requests deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        def delete(self, request, *args, **kwargs):
+            try:
+                # Delete all instances of leave_requests
+                leave_requests.objects.all().delete()
+                return Response({'message': 'All leave_requests deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 class LeaveRequestDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = leave_requestsSerializer
