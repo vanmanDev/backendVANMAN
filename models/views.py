@@ -74,18 +74,18 @@ class LeaveRequestList(generics.ListCreateAPIView):
                 logger.error(f"Error during leave request creation: {str(e)}")
                 raise e
 
-    def patch(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+     def patch(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        self.perform_patch(serializer)
 
         leave_request = serializer.instance
         supervisor = leave_request.user.supervisor
         if supervisor and supervisor.email:
             self.send_leave_request_email(leave_request, supervisor.email, "Updated Leave Request")
-        
+
         return Response(serializer.data)
 
     def perform_patch(self, serializer):
@@ -94,7 +94,7 @@ class LeaveRequestList(generics.ListCreateAPIView):
                 serializer.save()
             except Exception as e:
                 logger.error(f"Error during leave request update: {str(e)}")
-                raise e
+                raise ValidationError({"detail": "An error occurred while updating the leave request."})
 
     def send_leave_request_email(self, leave_request, supervisor_email, subject):
         try:
