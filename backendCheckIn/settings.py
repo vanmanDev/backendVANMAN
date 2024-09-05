@@ -127,9 +127,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': 'YAgVVGHIlSgFRKDLrAUGRVYnfyFWgRrf',
-        'HOST': 'autorack.proxy.rlwy.net',
-        'PORT': '20564',  # ตรวจสอบพอร์ตที่ใช้งาน
+        'PASSWORD': 'WMcvsSraHAqDTNduVINmNVIojotjVxEr',
+        'HOST': 'autorack.proxy.rlwy.net',  # ใช้ค่า HOST จาก DATABASE_PUBLIC_URL
+        'PORT': '53993',  # ใช้พอร์ตที่ตรงกับ DATABASE_PUBLIC_URL
     }
 }
 
