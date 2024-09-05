@@ -122,29 +122,16 @@ FRONTEND_URL = "https://vanman.vercel.app"
 # }
 
 
-# DATABASES = {
-#        'default' : {  
-#         'ENGINE' : 'django.db.backends.postgresql',
-#         'NAME' : 'railway',
-#         'USER': 'postgres',
-#         'HOST' :'monorail.proxy.rlwy.net',
-#         'PASSWORD':'zqavVrmfqNPlncvERkUkmBjWwFJPDUtd',
-#         'PORT': 48825,
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': 'WMcvsSraHAqDTNduVINmNVIojotjVxEr',
-        'HOST': 'autorack.proxy.rlwy.net',  # ใช้ค่า HOST จาก DATABASE_PUBLIC_URL
-        'PORT': '53993',  # ใช้พอร์ตที่ตรงกับ DATABASE_PUBLIC_URL
+        'PASSWORD': 'YAgVVGHIlSgFRKDLrAUGRVYnfyFWgRrf',
+        'HOST': 'autorack.proxy.rlwy.net',
+        'PORT': '20564',  # ตรวจสอบพอร์ตที่ใช้งาน
     }
 }
-
- 
 
 
 # Password validation
