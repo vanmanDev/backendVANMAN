@@ -132,17 +132,19 @@ FRONTEND_URL = 'https://vanman-eight.vercel.app/'
 #         'PORT': 48825,
 #     }
 # }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # ชื่อฐานข้อมูล
-        'USER': 'postgres.gwpuwxcbcmbtgpizckby',  # ชื่อผู้ใช้
-        'PASSWORD': '2BopUY6NmUtcjO90',  # รหัสผ่าน
-        'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',  # โฮสต์ของฐานข้อมูล
-        'PORT': '6543',  # พอร์ตที่ใช้เชื่อมต่อ
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'WMcvsSraHAqDTNduVINmNVIojotjVxEr',
+        'HOST': 'autorack.proxy.rlwy.net',  # ใช้ค่า HOST จาก DATABASE_PUBLIC_URL
+        'PORT': '53993',  # ใช้พอร์ตที่ตรงกับ DATABASE_PUBLIC_URL
     }
 }
 
+ 
 
 
 # Password validation
