@@ -29,7 +29,7 @@ EMAIL_HOST_PASSWORD ='lzsrozrfuvqrkmlc'
 EMAIL_PORT = 587
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -65,7 +65,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backendCheckIn.urls'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-"http://localhost:5173","https://vanman.vercel.app"
+"http://localhost:5173","https://vanman-eight.vercel.app"
 ]
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -103,7 +103,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backendCheckIn.wsgi.application'
-FRONTEND_URL = 'https://vanman.vercel.app'
+FRONTEND_URL = 'https://vanman-eight.vercel.app/'
 
 
 # Database
@@ -122,17 +122,27 @@ FRONTEND_URL = 'https://vanman.vercel.app'
 # }
 
 
+# DATABASES = {
+#        'default' : {  
+#         'ENGINE' : 'django.db.backends.postgresql',
+#         'NAME' : 'railway',
+#         'USER': 'postgres',
+#         'HOST' :'monorail.proxy.rlwy.net',
+#         'PASSWORD':'zqavVrmfqNPlncvERkUkmBjWwFJPDUtd',
+#         'PORT': 48825,
+#     }
+# }
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'qkosEPxtSBBHNeUCdjMCKYDpFcZewvwa',
-        'HOST': 'viaduct.proxy.rlwy.net',
-        'PORT': '58954',
+        'NAME': 'postgres',
+        'USER': 'postgres.rggcvnjxkvwuezdcdnvz',
+        'PASSWORD': 'vlNBug23NoLBULNj',
+        'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',
+        'PORT': '6543',
     }
 }
+
 
 
 # Password validation
